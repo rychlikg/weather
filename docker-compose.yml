@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  weather:
+    build: ./weather
+    ports:
+    - 8080:8080
+    expose:
+     - 8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb/weather?useSSL=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Europe/Warsaw&autoReconnect=true
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: weather
+
+  adviser-1:
+      build: ./adviser
+      ports:
+        - 8090:8090
+      depends_on:
+        - weather
+
+  micro-app:
+    build: ./microservice
+    ports:
+      - 9080:9080
+    depends_on:
+      - weather
